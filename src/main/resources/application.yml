@@ -1,0 +1,8 @@
+spring:
+  security:    user:      name: admin
+      password: 123qwe
+  redis:
+    host: daejin04.co.kr
+    port: 63790
+    password: 1q2w3e!Q@W#E
+    
