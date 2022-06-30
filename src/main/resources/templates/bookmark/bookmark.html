@@ -7,7 +7,7 @@
 
 <body>
 	<div>
-		<select name="stock-list">
+		<select name="stock-list" id="stock-list">
 		</select>
 		<input type="button" onclick="addStock()" value="종목추가" />
 	</div>
@@ -20,8 +20,11 @@
 			type: "get",
 			success: function (data) {
 				alert(JSON.stringify(data));
-				$.each(data, function(k,v){
-					alert(k + ":" + v);
+				$.each(data, function (k, v) {
+					$('#stock-list').append($('<option>', {
+						value: k,
+						text: v
+					}));
 				});
 			},
 			error: function () {
