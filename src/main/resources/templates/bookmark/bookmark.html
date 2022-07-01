@@ -10,16 +10,51 @@
 		<select name="stock-list" id="stock-list">
 		</select>
 		<input type="button" onclick="addStock()" value="종목추가" />
+		<!--
+		<table th:each="entry : ${orgMap}">    
+			<tr>        
+				<td th:text="${entry.key}">Key</td>        
+				<td	th:text="${entry.value}">Value</td>
+		    </tr>
+		</table>
+-->
 	</div>
+	<!--
+	<template id="mystock-template">
+		<section>
+		   <h1 code="{code}" name="{name}">{name}</h1>
+		   <ul id='{code}-ui'>
+		   </ul>
+		</section>
+	</template>
+-->
 </body>
-<script>
+
+<script id=mystock-template type=text/template>
+		<section>
+		   <h1 code="{code}" name="{name}">{name}</h1>
+		   <ul id='{code}-ui'>
+		   </ul>
+		</section>
+</script>
+
+
+
+<script th:inline="javascript">
+	var test;
 	$(document).ready(function () {
-		alert("ready");
+
+		test = [[${orgMap}]];
+		/*
+				$.each(test, function (k, v) {
+					alert(k + ":" + v);
+				});
+		*/
 		$.ajax({
 			url: "/stock/list",
 			type: "get",
 			success: function (data) {
-				alert(JSON.stringify(data));
+				//alert(JSON.stringify(data));
 				$.each(data, function (k, v) {
 					$('#stock-list').append($('<option>', {
 						value: k,
@@ -32,8 +67,33 @@
 			}
 		})
 	});
+
+	$.fn.attrs = function (fnc) {
+		var obj = {};
+		$.each(this[0].attributes, function () {
+			if (this.name == 'value') return; // Avoid someone (optional)
+			if (this.specified) obj[this.name] = this.value;
+		});
+		return obj;
+	}
+
 	function addStock() {
-		alert("addStock");
+		var template = document.querySelector("#mystock-template").innerHTML;
+		template = template
+			.replaceAll("{code}", "codedd")
+			.replaceAll("{name}", "testtt");
+
+		$("body").append(template);
+		/*
+		$("body")
+		.append(
+			$('<section>').append(
+				$('<ul>', {code: "KR011", text:"삼성전자"}).append(
+					$('<li>', {orgcode: "O01", text:"키움"})
+				)
+			)
+		);
+		*/
 	}
 </script>
 

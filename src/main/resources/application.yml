@@ -1,8 +1,21 @@
 spring:
+
   security:    user:      name: admin
       password: 123qwe
+      
   redis:
     host: daejin04.co.kr
     port: 63790
     password: 1q2w3e!Q@W#E
+    
+  
+props:
+
+  orgs:
+    O01:  키움
+    O02:  한투
+    O03:  토스
+    O04:  KB
+    O05:  유안타
+    
     
