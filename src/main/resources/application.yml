@@ -8,6 +8,9 @@ spring:
     port: 63790
     password: 1q2w3e!Q@W#E
     
+logging:  level:
+    root: debug
+    '[io.lettuce]': info
   
 props:
 

@@ -21,5 +21,7 @@ public class StockController {
 	public Map<String, String> getList() {
 		return stockService.getStockList();
 	}
+	
+	
 
 }

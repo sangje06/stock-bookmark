@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -22,7 +23,7 @@ public class SchdStockList {
 	@Autowired
 	private RedisTemplate<String, Object> redisTemplate;
 
-//	@Scheduled(fixedDelay = 3000)
+	// @Scheduled(fixedDelay = 3000)
 	public void getStockList() throws JsonMappingException, JsonProcessingException {
 		int page = 1;
 		int rows = 1000;

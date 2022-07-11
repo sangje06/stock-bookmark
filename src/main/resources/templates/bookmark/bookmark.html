@@ -33,23 +33,27 @@
 <script id=mystock-template type=text/template>
 		<section>
 		   <h1 code="{code}" name="{name}">{name}</h1>
-		   <ul id='{code}-ui'>
+		   <button onclick="deleteStock('{code}')">삭제</button>
+		   <ul id='{code}-ul'>
 		   </ul>
+		   <select id="{code}-select">
+		   </select>
+		   <button onclick="addOrg('{code}')">추가</button>
+		   <button onclick="saveOrg(this)">저장</button>
 		</section>
+</script>
+
+<script id=mystock-template-li type=text/template>
+		<li value="{code}">{name}<input type='Number' name='price' placeholder='가격'/><input type='Number' name='qty' placeholder='수량'/></li>
 </script>
 
 
 
 <script th:inline="javascript">
-	var test;
+	const orgs = [[${orgMap}]];
+	const stocks = {};
+	
 	$(document).ready(function () {
-
-		test = [[${orgMap}]];
-		/*
-				$.each(test, function (k, v) {
-					alert(k + ":" + v);
-				});
-		*/
 		$.ajax({
 			url: "/stock/list",
 			type: "get",
@@ -60,12 +64,16 @@
 						value: k,
 						text: v
 					}));
+					stocks[k] = v;
 				});
+				getMyStockList();				
 			},
 			error: function () {
 				alert("error");
 			}
 		})
+		
+		
 	});
 
 	$.fn.attrs = function (fnc) {
@@ -76,14 +84,66 @@
 		});
 		return obj;
 	}
+	
+	function getMyStockList() {
+		$.ajax({
+			url: "/my/stock/list",
+			type: "get",
+			success: function (data) {
+				alert(JSON.stringify(data));
+				$.each(data, function(k,v){
+					alert(stocks[k]);
+					alert(v);
+					drawMyStock(k, stocks[k], v);
+				})		
+			},
+			error: function () {
+				alert("error");
+			}
+		})
+	}
 
-	function addStock() {
-		var template = document.querySelector("#mystock-template").innerHTML;
+	function drawMyStock(code, name, data) {
+		let template = document.querySelector("#mystock-template").innerHTML;
 		template = template
-			.replaceAll("{code}", "codedd")
-			.replaceAll("{name}", "testtt");
+			.replaceAll("{code}", code)
+			.replaceAll("{name}", name);
+		$("body").append(template);
+		$.each(orgs, function(k,v) {
+			$("#"+code+"-select").append("<option value="+k+">" + v + "</option>");	
+		});
+		$.each(JSON.parse(data), function(index, row){
+			// $("#"+code+"-ul").append(template);
+			let template = document.querySelector("#mystock-template-li").innerHTML;
+			template = template
+				.replaceAll("{code}", row["orgCode"])
+				.replaceAll("{name}", orgs[row["orgCode"]]);
+				// .replaceAll("{price}", data["price"])
+				// .replaceAll("{qty}", data["qty"]);			
+			let ul = $("#"+code+"-ul").append(template);
+			ul.find("input[name=price]:eq("+index+")").val(row["price"]);
+			ul.find("input[name=qty]:eq("+index+")").val(row["qty"]);
+		})
+		
+	}
+	
+	function addStock() {
+		let orgCode = $("#stock-list option:selected").val();
+		let orgName = $("#stock-list option:selected").text();
+		
+		// alert(orgCode + ":" + orgName);
+		
+		let template = document.querySelector("#mystock-template").innerHTML;
+		template = template
+			.replaceAll("{code}", orgCode)
+			.replaceAll("{name}", orgName);
 
 		$("body").append(template);
+		
+		$.each(orgs, function(k,v) {
+			$("#"+code+"-select").append("<option value="+k+">" + v + "</option>");	
+		});
+		
 		/*
 		$("body")
 		.append(
@@ -94,6 +154,70 @@
 			)
 		);
 		*/
+	}
+	
+	function addOrg(code) {
+		let template = document.querySelector("#mystock-template-li").innerHTML;
+		let orgCode = $("#"+code+"-select option:selected").val();
+		let orgName = $("#"+code+"-select option:selected").text();
+		template = template
+			.replaceAll("{code}", orgCode)
+			.replaceAll("{name}", orgName);
+		$("#"+code+"-ul").append(template);
+	}
+	
+	function saveOrg(el) {
+		let code = $(el).parent().find('h1').attr('code');
+		console.log(code);
+		let retval = {};
+		let items=[];
+		$(el).parent().find("li").each(function(index, item){
+			let key = $(item).attr('value');
+			console.log($(item).attr('value'));
+			let it = {};
+			it['orgCode'] = key;
+			it['price'] = $(item).find('input[name=price]').val();
+			it['qty'] = $(item).find('input[name=qty]').val();
+			console.log(index +":"+ JSON.stringify(it));
+			items.push(it);
+		});
+		retval[code] = items;
+		console.log(JSON.stringify(retval));
+		let response = sendPost("/my/stock/save", JSON.stringify(retval));
+	}
+	
+	function sendPost(url, data) {
+		$.ajax({
+			url: url,
+			type: "post",
+			contentType: 'application/json',
+			data: data,
+			success: function (data) {
+				return data;
+			},
+			error: function () {
+				alert("error");
+			}
+		})
+	}
+	
+	function deleteStock(code) {
+		alert(code);
+	}
+	
+	function sendDelete(url, data) {
+		$.ajax({
+			url: url,
+			type: "post",
+			contentType: 'application/json',
+			data: data,
+			success: function (data) {
+				return data;
+			},
+			error: function () {
+				alert("error");
+			}
+		})
 	}
 </script>
 
